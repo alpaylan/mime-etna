@@ -1,0 +1,21 @@
+Inject pre-0bba696 behaviour: param comparison uses raw &str equality
+instead of Value's quoted-string content equality. Parsing
+"text/plain; x=foo" and "text/plain; x=\"foo\"" yields raw param
+values of lengths 3 and 5, which compare unequal. The fix wrapped
+values in Value and delegated to Value::PartialEq; the revert uses
+Mime::params() / Mime::param() directly in src/cmp.rs.
+
+diff --git a/src/cmp.rs b/src/cmp.rs
+--- a/src/cmp.rs
++++ b/src/cmp.rs
+@@ -38,8 +38,8 @@ fn params_eq(a: &Mime, b: &Mime) -> bool {
+     //
+     // A simple benchmark suggests a hashmap is faster after about
+     // 10 parameters...
+-    for (name, value) in crate::value::params(a) {
+-        if crate::value::param(b, name) != Some(value) {
++    for (name, value) in a.params() {
++        if b.param(name) != Some(value) {
+             return false;
+         }
+     }

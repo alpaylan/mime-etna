@@ -116,7 +116,13 @@ impl Mime {
 
     #[inline]
     pub fn subtype(&self) -> &str {
+        /*| subtype_with_plus */
         let end = self.semicolon_or_end();
+        /*|| subtype_with_plus_5ebf32e_1 */
+        /*|
+        let end = self.plus.map(|p| p as usize).unwrap_or_else(|| self.semicolon_or_end());
+        */
+        /* |*/
         &self.source.as_ref()[self.slash as usize + 1..end]
     }
 

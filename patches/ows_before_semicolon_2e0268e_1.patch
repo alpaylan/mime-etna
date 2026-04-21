@@ -1,0 +1,22 @@
+Inject pre-2e0268e behaviour: the parser's sublevel loop does not
+accept OWS (a bare space) between the subtype and the `;` that
+introduces parameters. Parsing "text/plain ;charset=utf-8" fails with
+InvalidToken at the space, but "text/plain;charset=utf-8" still
+succeeds. Minimal mutation: remove the OWS match arm the fix added at
+mime-parse/src/rfc7231.rs.
+
+diff --git a/mime-parse/src/rfc7231.rs b/mime-parse/src/rfc7231.rs
+--- a/mime-parse/src/rfc7231.rs
++++ b/mime-parse/src/rfc7231.rs
+@@ -95,10 +95,6 @@ pub(crate) fn parse(opts: &Parser, src: impl Parse) -> Result<Mime, ParseError>
+             Some((i, b';')) if i > start => {
+                 start = i;
+                 break;
+             },
+-            Some((i, b' ')) if i > start => {
+-                start = i;
+-                break;
+-            },
+             Some((i, b'*')) if i == start && opts.can_range => {
+                 // sublevel star can only be the first character, and the next
+                 // must either be the end, or `;`
