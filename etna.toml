@@ -1,0 +1,103 @@
+# ETNA workload index for mime.
+#
+# One [[variant]] per injected mutation. Source of truth for variant->property
+# mapping. Every other fact is derivable from the source tree:
+#   - marauders list --path .                      (inline marauder mutations)
+#   - ls patches/*.patch                           (patch-based variants)
+#   - grep -rn "pub fn property_" src/etna.rs      (property functions)
+#   - grep -rn "fn witness_.*_case_" tests/        (witness tests)
+#
+# Base commit for this workload is HEAD of master on this tree
+# (fab188fe172a45561cfc813b5d96e10b330691d9, "etna: inject marauders
+# mutations and variant patches"). Every etna/<variant> branch is base +
+# exactly one marauder converted to its functional form (or patches/<variant>.patch
+# applied on top of base).
+
+name = "mime"
+language = "Rust"
+
+[workload]
+name = "mime"
+crate = "mime"
+language = "rust"
+description = """
+ETNA workload for the Rust `mime` crate (hyperium/mime). Each variant
+re-introduces one historical bug-fix into a fresh patched branch and pairs
+it with a framework-neutral property, four PBT adapters, and a deterministic
+witness test.
+"""
+
+[runner]
+bin = "etna"
+cargo_features = []
+properties = [
+    "SubtypeWithPlus",
+    "StripEmptyParams",
+    "OwsBeforeSemicolon",
+    "QuotedVsUnquotedParamEq",
+]
+tools = ["etna", "proptest", "quickcheck", "crabcheck", "hegel"]
+
+[[variant]]
+name = "subtype_with_plus_5ebf32e_1"
+property = "subtype_with_plus"
+injection = "marauders"
+source_commit = "5ebf32ed61c2642a295535e0d64c2f2c2ad1d1d2"
+witnesses = [
+    "witness_subtype_with_plus_case_xhtml_xml",
+    "witness_subtype_with_plus_case_app_json_cbor",
+]
+frameworks = ["proptest", "quickcheck", "crabcheck", "hegel"]
+files = ["mime-parse/src/lib.rs"]
+
+[[variant]]
+name = "strip_empty_params_7a39824_1"
+property = "strip_empty_params"
+injection = "marauders"
+source_commit = "7a39824f8eb816496895593ccda418c177ef5756"
+witnesses = [
+    "witness_strip_empty_params_case_event_stream_semicolon",
+    "witness_strip_empty_params_case_json_trailing_ws",
+]
+frameworks = ["proptest", "quickcheck", "crabcheck", "hegel"]
+files = ["mime-parse/src/rfc7231.rs"]
+
+[[variant]]
+name = "ows_before_semicolon_2e0268e_1"
+property = "ows_before_semicolon"
+injection = "patch"
+patch = "patches/ows_before_semicolon_2e0268e_1.patch"
+source_commit = "2e0268e6dc2933db308e452787c4ca85bc63bd6e"
+witnesses = [
+    "witness_ows_before_semicolon_case_text_plain_charset",
+    "witness_ows_before_semicolon_case_html_name_foo",
+]
+frameworks = ["proptest", "quickcheck", "crabcheck", "hegel"]
+files = ["mime-parse/src/rfc7231.rs"]
+
+[[variant]]
+name = "quoted_vs_unquoted_param_eq_0bba696_1"
+property = "quoted_vs_unquoted_param_eq"
+injection = "patch"
+patch = "patches/quoted_vs_unquoted_param_eq_0bba696_1.patch"
+source_commit = "0bba696c3795daaef945b821558cb2898a214ef1"
+witnesses = [
+    "witness_quoted_vs_unquoted_param_eq_case_name_foo",
+    "witness_quoted_vs_unquoted_param_eq_case_profile_bar",
+]
+frameworks = ["proptest", "quickcheck", "crabcheck", "hegel"]
+files = ["src/cmp.rs"]
+
+# Candidates discovered but dropped for terminal reasons:
+#   fd4ed47  Rename Mime to MediaType
+#   d5c0360  Remove deprecated description
+#     reason: API renames / deprecations, not bug fixes — no runtime
+#     invariant to violate.
+#   pre-2018-12-27 parser rewrites (9a75ce9, f7d1f8b, ...)
+#     reason: the entire parser module was replaced in a single refactor;
+#     no pre-rewrite behaviour survives in the current code as a localized
+#     mutation — "surface removed".
+#   938484d  Change deprecated range syntax
+#   1ef137c  Fix docs failing to compile (#162)
+#   65ea9c3  remove serde-test dev dependency
+#     reason: housekeeping / CI fixes, no runtime invariant to violate.
