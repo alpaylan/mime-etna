@@ -2,6 +2,7 @@
 #![deny(warnings)]
 #![deny(missing_docs)]
 #![deny(missing_debug_implementations)]
+#![allow(mismatched_lifetime_syntaxes)]
 
 //! # MediaType and MediaRange
 //!
@@ -116,6 +117,7 @@ pub use self::value::{Value, UTF_8};
 mod cmp;
 mod constants;
 mod error;
+pub mod etna;
 #[cfg(feature = "macro")]
 mod macros;
 mod range;
