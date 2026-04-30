@@ -21,8 +21,8 @@ serde1 = { version = "1", optional = true, package = "serde" }
 # ETNA benchmark runner framework dependencies (used by src/bin/etna.rs and
 # src/etna.rs — the workload's property-based test harness).
 proptest = "1.0"
-quickcheck = { path = "/Users/akeles/Programming/projects/PbtBenchmark/quickcheck", features = ["etna"] }
-crabcheck = { path = "/Users/akeles/Programming/projects/PbtBenchmark/crabcheck" }
+quickcheck = { git = "https://github.com/alpaylan/quickcheck.git", branch = "master", features = ["etna"] }
+crabcheck = { git = "https://github.com/alpaylan/crabcheck.git", branch = "main" }
 hegeltest = "0.3.7"
 
 [features]
