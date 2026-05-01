@@ -20,7 +20,8 @@ commit_subjects = ["Fix subtype() to include the +suffix"]
 summary = "`MediaType::subtype()` truncated at the `+` index, so `application/xhtml+xml` reported `\"xhtml\"` as the subtype; the fix returns the whole name (`\"xhtml+xml\"`) and exposes the suffix via a separate `suffix()` accessor."
 
 [tasks.injection]
-kind = "marauders"
+kind = "patch"
+patch = "patches/subtype_with_plus_5ebf32e_1.patch"
 files = ["mime-parse/src/lib.rs"]
 locations = [{ file = "mime-parse/src/lib.rs", line = 119 }]
 
@@ -48,7 +49,8 @@ commit_subjects = ["Strip empty parameter lists when parsing"]
 summary = "When parsing `text/event-stream;` (trailing semicolon, no actual parameters), the parser interned the whole source including the `;`; the fix truncates the interned slice to `&s[..start]` so `has_params()` is `false` and the parse matches `text/event-stream`."
 
 [tasks.injection]
-kind = "marauders"
+kind = "patch"
+patch = "patches/strip_empty_params_7a39824_1.patch"
 files = ["mime-parse/src/rfc7231.rs"]
 locations = [{ file = "mime-parse/src/rfc7231.rs", line = 144 }]
 

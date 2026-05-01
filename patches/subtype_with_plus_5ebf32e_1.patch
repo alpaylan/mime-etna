@@ -1,0 +1,13 @@
+# marauders: name=subtype_with_plus
+diff --git a/mime-parse/src/lib.rs b/mime-parse/src/lib.rs
+--- a/mime-parse/src/lib.rs
++++ b/mime-parse/src/lib.rs
+@@ -116,7 +116,7 @@
+ 
+     #[inline]
+     pub fn subtype(&self) -> &str {
+-        let end = self.semicolon_or_end();
++        let end = self.plus.map(|p| p as usize).unwrap_or_else(|| self.semicolon_or_end());
+         &self.source.as_ref()[self.slash as usize + 1..end]
+     }
+ 

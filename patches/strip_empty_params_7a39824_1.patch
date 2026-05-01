@@ -1,0 +1,22 @@
+# marauders: name=strip_empty_params
+diff --git a/mime-parse/src/rfc7231.rs b/mime-parse/src/rfc7231.rs
+--- a/mime-parse/src/rfc7231.rs
++++ b/mime-parse/src/rfc7231.rs
+@@ -141,16 +141,7 @@
+     let params = params_from_str(s, &mut iter, start)?;
+ 
+     let source = match params {
+-        ParamSource::None => {
+-            // Getting here means there *was* a `;`, but then no parameters
+-            // after it... So let's just chop off the empty param list.
+-            debug_assert_ne!(s.len(), start);
+-            debug_assert!({
+-                let b = s.as_bytes()[start];
+-                b == b';' || b == b' '
+-            });
+-            Atoms::intern(&s[..start], slash, InternParams::None)
+-        },
++        ParamSource::None => Atoms::intern(s, slash, InternParams::None),
+         ParamSource::Utf8(params_start) => Atoms::intern(s, slash, InternParams::Utf8(params_start as usize)),
+         ParamSource::One(params_start, a) => Source::Dynamic(lower_ascii_with_params(s, params_start as usize, &[a])),
+         ParamSource::Two(params_start, a, b) => Source::Dynamic(lower_ascii_with_params(s, params_start as usize, &[a, b])),
