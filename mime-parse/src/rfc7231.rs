@@ -141,7 +141,6 @@ pub(crate) fn parse(opts: &Parser, src: impl Parse) -> Result<Mime, ParseError> 
     let params = params_from_str(s, &mut iter, start)?;
 
     let source = match params {
-        /*| strip_empty_params */
         ParamSource::None => {
             // Getting here means there *was* a `;`, but then no parameters
             // after it... So let's just chop off the empty param list.
@@ -152,11 +151,6 @@ pub(crate) fn parse(opts: &Parser, src: impl Parse) -> Result<Mime, ParseError> 
             });
             Atoms::intern(&s[..start], slash, InternParams::None)
         },
-        /*|| strip_empty_params_7a39824_1 */
-        /*|
-        ParamSource::None => Atoms::intern(s, slash, InternParams::None),
-        */
-        /* |*/
         ParamSource::Utf8(params_start) => Atoms::intern(s, slash, InternParams::Utf8(params_start as usize)),
         ParamSource::One(params_start, a) => Source::Dynamic(lower_ascii_with_params(s, params_start as usize, &[a])),
         ParamSource::Two(params_start, a, b) => Source::Dynamic(lower_ascii_with_params(s, params_start as usize, &[a, b])),
