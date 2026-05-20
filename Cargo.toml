@@ -33,6 +33,10 @@ macro = ["mime-macro", "proc-macro-hack"]
 name = "etna"
 path = "src/bin/etna.rs"
 
+[[bin]]
+name = "etna-faultloc"
+path = "src/bin/etna-faultloc.rs"
+
 [workspace]
 members = [
     "./",
